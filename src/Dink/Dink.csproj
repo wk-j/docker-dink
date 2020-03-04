@@ -10,9 +10,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\..\native\*">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-        </Content>
+        <Content Include="..\..\native\*" CopyToPublishDirectory="PreserveNewest"/>
     </ItemGroup>
 </Project>

@@ -2,10 +2,15 @@
 FROM mcr.microsoft.com/dotnet/core-nightly/sdk:3.1.101 as build
 WORKDIR /app
 
+RUN apt-get update
+RUN apt-get install xvfb libfontconfig wkhtmltopdf -y
+
 # COPY dockerize/dockerize dockerize
 
 COPY src/Dink src/Dink
-COPY native natvie
+COPY native native
+
+# ENV LD_LIBRARY_PATH=/app
 
 RUN dotnet build src/Dink
 
