@@ -5,15 +5,23 @@ using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dink.Controllers {
+
+    public class GlobalService {
+        public int ServerPort { set; get; }
+    }
+
+
     [ApiController]
     [Route("[controller]/[action]")]
     public class ReportController : Controller {
         readonly IHttpClientFactory _factory;
         readonly IConverter _converter;
+        readonly GlobalService _global;
 
-        public ReportController(IHttpClientFactory factory, IConverter converter) {
+        public ReportController(IHttpClientFactory factory, IConverter converter, GlobalService global) {
             _factory = factory;
             _converter = converter;
+            _global = global;
         }
 
         [HttpGet]
@@ -23,7 +31,8 @@ namespace Dink.Controllers {
 
         [HttpGet]
         public async Task<IActionResult> Generate() {
-            var url = "http://localhost:80/report/summary";
+            var port = _global.ServerPort;
+            var url = $"http://localhost:{port}/report/summary";
             var client = new HttpClient();
             var html = await client.GetStringAsync(url);
 

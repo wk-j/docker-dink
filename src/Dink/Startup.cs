@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dink.Controllers;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -25,15 +27,32 @@ namespace Dink {
             services.AddControllers();
             services.AddSingleton<IConverter>(new SynchronizedConverter(new PdfTools { }));
             services.AddHttpClient();
+            services.AddSingleton<GlobalService>();
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        int FindPort(IApplicationBuilder app) {
+            var address = app.ServerFeatures
+               .Get<IServerAddressesFeature>().Addresses.First();
+            var port = int.Parse(address.Split(':').Last());
+
+            if (port == 5001) {
+                return 5000;
+            }
+
+            return port;
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, GlobalService global) {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            var port = FindPort(app);
+            global.ServerPort = port;
+
+            // app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {

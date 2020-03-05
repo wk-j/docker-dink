@@ -12,3 +12,10 @@ docker-compose up --build
 
 - http://localhost/report/summary
 - http://localhost/report/generate
+
+- http://localhost:5000/report/summary
+- http://localhost:5000/report/generate
+
+## Resource
+
+- https://www.meziantou.net/inlining-a-stylesheet-using-a-taghelper-in-asp-net-core.htm
