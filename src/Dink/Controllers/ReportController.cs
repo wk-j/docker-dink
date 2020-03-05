@@ -1,29 +1,33 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dink.Controllers
-{
+namespace Dink.Controllers {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class ReportController : Controller
-    {
+    public class ReportController : Controller {
+        readonly IHttpClientFactory _factory;
+        readonly IConverter _converter;
+
+        public ReportController(IHttpClientFactory factory, IConverter converter) {
+            _factory = factory;
+            _converter = converter;
+        }
+
         [HttpGet]
-        public IActionResult Summary()
-        {
+        public IActionResult Summary() {
             return View();
         }
 
         [HttpGet]
-        public async Task<IActionResult> Generate()
-        {
+        public async Task<IActionResult> Generate() {
             var url = "http://localhost:80/report/summary";
             var client = new HttpClient();
             var html = await client.GetStringAsync(url);
 
-            var doc = new HtmlToPdfDocument()
-            {
+            var doc = new HtmlToPdfDocument() {
                 GlobalSettings = {
                     DPI = 96,
                     ColorMode = ColorMode.Color,
@@ -43,8 +47,7 @@ namespace Dink.Controllers
                 }
             };
 
-            var converter = new SynchronizedConverter(new PdfTools());
-            var result = converter.Convert(doc);
+            var result = _converter.Convert(doc);
             return File(result, "application/pdf", $"qa-1.pdf");
         }
     }
