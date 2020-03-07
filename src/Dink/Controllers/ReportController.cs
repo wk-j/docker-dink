@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using Dink.Extensions;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Mvc;
@@ -31,11 +32,7 @@ namespace Dink.Controllers {
 
         [HttpGet]
         public async Task<IActionResult> Generate() {
-            var port = _global.ServerPort;
-            var url = $"http://localhost:{port}/report/summary";
-            var client = new HttpClient();
-            var html = await client.GetStringAsync(url);
-
+            var html = await this.RenderViewAsync(nameof(Summary), new { }, false);
             var doc = new HtmlToPdfDocument() {
                 GlobalSettings = {
                     DPI = 96,
